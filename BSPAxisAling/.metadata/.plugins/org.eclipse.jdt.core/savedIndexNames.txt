@@ -1,0 +1,4 @@
+INDEX VERSION 1.131+C:\Users\bruno\git_repository\BSP\BSP_alinhadoAoEixo\BSPAxisAling\.metadata\.plugins\org.eclipse.jdt.core
+1180519437.index
+1865797976.index
+3672500907.index

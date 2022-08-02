@@ -1,0 +1,109 @@
+package com.BSPApp.base;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.text.TabStop;
+
+import com.BSPApp.Utilities.Rectangle;
+import com.BSPApp.Utilities.Vector2;
+
+public class GameLoop extends Thread {
+	public static final float FPS = 1f / 60;
+	private static float accumulator;
+	public static Particle[] p;
+	private int speed = 5;
+	private final static int Count = 100;
+	public static int ray = 7;
+	private static BSPTree tree;
+	private static List<Integer> indexs = new ArrayList<Integer>();
+	private static float count;
+	public static double deltaTime;
+
+	public GameLoop() {
+		int s = (int) Math.sqrt(Count);
+		p = new Particle[s * s];
+		int w = App.instance.getWidth() / s;
+		int h = App.instance.getHeight() / s;
+		for (int i = 0, f = 0; i < s; i++) {
+			for (int j = 0; j < s; j++, f++) {
+				p[f] = new Particle(new Vector2(w * i, h * j), new Vector2(1, 1), speed, ray);
+				p[f].ChangeDir();
+			}
+		}
+		for (int i = 0; i < p.length; i++) {
+			indexs.add(i);
+		}
+	}
+
+	@Override
+	public void run() {
+		double deltaT = 0;
+		while (!App.instance.quit) {
+			long start = System.currentTimeMillis();
+
+			accumulator += deltaT;
+			Input();
+
+			update(deltaT);
+
+			while (accumulator > FPS) {
+				FixeUpdate();
+				accumulator -= FPS;
+			}
+			Render();
+			long end = System.currentTimeMillis();
+			System.out.println("time " + ((double) (end - start)) / 1000.0d);
+			deltaT = ((double) (end - start)) / 1000.0d;
+		}
+	}
+
+	private static void FixeUpdate() {
+
+	}
+
+	private static void update(Double deltaT) {
+		accumulator += (1f * deltaT);
+		count += (1f * deltaT);
+		deltaTime = (1f * deltaT);
+
+		tree = new BSPTree(p, new Node(indexs));
+		Rectangle screenRect = new Rectangle(new Vector2(0, 0),
+				new Vector2(App.instance.getWidth(), App.instance.getHeight()));
+		tree.BSPRecursiveSplit(0, tree.root, screenRect);
+
+		for (int i = 0; i < p.length; i++) {
+			for (int j = 0; j < p.length; j++) {
+//				if (i == j) {
+//					continue;
+//				}
+//				if (p[i].CheckCollide(p[j].GetPosition())) {
+//					p[i].ChangeDir();
+//					p[j].ChangeDir();
+//				}
+//				if (p[i].CheckBorder()) {
+//					p[i].ChangeDir();
+//				}
+			}
+//			p[i].Move(GameLoop.deltaTime);
+		}
+	}
+
+	private static void Input() {
+
+	}
+
+	private static void Render() {
+//		for (int i = 0; i < GameLoop.p.length; i++) {
+//			if (GameLoop.p[i] != null) {
+//				GameLoop.p[i].Draw();
+//			}
+//		}
+		if (count > .1f) {
+			// App.instance.getGraphics().clearRect(0, 0, 720, 600);
+			App.instance.paint(App.instance.getGraphics());
+			count = 0;
+		}
+
+	}
+}
